@@ -1,0 +1,43 @@
+name: Verify pull request to main
+
+on:
+  pull_request:
+    branches:
+      - "main"
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Run tests
+        run: make test
+
+      - name: Verify code coverage level
+        run: make coverage
+
+  lint:
+    name: Lint
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install lint tools
+        run: make install
+
+      - name: Lint
+        run: make lint
+
+  build:
+    name: Test build process
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Build
+        run: make build
