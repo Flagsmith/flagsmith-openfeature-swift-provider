@@ -40,12 +40,12 @@ extension FlagsmithProvider {
         throws
         -> ProviderEvaluation<Bool>
     {
-        try evaluate(key, logger: logger) { flag in
+        try evaluate(key, logger: logger) { flag, snapshot in
             guard useBooleanConfigValue else {
                 return ProviderEvaluation(
-                    value: flag.enabled, flagMetadata: metadata(for: flag), reason: reason(for: flag))
+                    value: flag.enabled, flagMetadata: metadata(for: flag), reason: reason(for: flag, in: snapshot))
             }
-            return try resolve(flag, key: key, as: "Boolean") { value in
+            return try resolve(flag, in: snapshot, key: key, as: "Boolean") { value in
                 if case .bool(let boolean) = value { return boolean }
                 return nil
             }
@@ -56,8 +56,8 @@ extension FlagsmithProvider {
         throws
         -> ProviderEvaluation<String>
     {
-        try evaluate(key, logger: logger) { flag in
-            try resolve(flag, key: key, as: "String") { value in
+        try evaluate(key, logger: logger) { flag, snapshot in
+            try resolve(flag, in: snapshot, key: key, as: "String") { value in
                 if case .string(let string) = value { return string }
                 return nil
             }
@@ -68,8 +68,8 @@ extension FlagsmithProvider {
         throws
         -> ProviderEvaluation<Int64>
     {
-        try evaluate(key, logger: logger) { flag in
-            try resolve(flag, key: key, as: "Integer") { value in
+        try evaluate(key, logger: logger) { flag, snapshot in
+            try resolve(flag, in: snapshot, key: key, as: "Integer") { value in
                 switch value {
                 case .int(let integer): return Int64(integer)
                 case .float(let float): return Int64(exactly: float)
@@ -84,8 +84,8 @@ extension FlagsmithProvider {
         throws
         -> ProviderEvaluation<Double>
     {
-        try evaluate(key, logger: logger) { flag in
-            try resolve(flag, key: key, as: "Double") { value in
+        try evaluate(key, logger: logger) { flag, snapshot in
+            try resolve(flag, in: snapshot, key: key, as: "Double") { value in
                 switch value {
                 case .float(let float): return Double(float)
                 case .int(let integer): return Double(integer)
@@ -100,8 +100,8 @@ extension FlagsmithProvider {
         throws
         -> ProviderEvaluation<Value>
     {
-        try evaluate(key, logger: logger) { flag in
-            try resolve(flag, key: key, as: "Object") { value in
+        try evaluate(key, logger: logger) { flag, snapshot in
+            try resolve(flag, in: snapshot, key: key, as: "Object") { value in
                 guard case .string(let json) = value else { return nil }
                 guard let parsed = try? JSONDecoder().decode(JSONValue.self, from: Data(json.utf8)) else {
                     throw OpenFeatureError.parseError(message: "Unable to parse object from value for flag '\(key)'")
