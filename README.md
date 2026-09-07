@@ -17,7 +17,7 @@ Add the provider to your `Package.swift` dependencies; the OpenFeature SDK and t
 ```swift
 platforms: [.iOS(.v15), .macOS(.v12), .watchOS(.v8), .tvOS(.v15)],
 dependencies: [
-    .package(url: "https://github.com/Flagsmith/flagsmith-openfeature-swift-provider.git", from: "<latest version>"),
+    .package(url: "https://github.com/Flagsmith/flagsmith-openfeature-swift-provider.git", from: "0.1.0"), // x-release-please-version
 ],
 targets: [
     .target(name: "MyApp", dependencies: [
