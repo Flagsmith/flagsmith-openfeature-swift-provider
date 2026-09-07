@@ -16,10 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Run tests
-        run: make test
-
-      - name: Verify code coverage level
+      - name: Run tests and verify code coverage level
         run: make coverage
 
   lint:
