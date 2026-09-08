@@ -2,20 +2,10 @@ import FlagsmithClient
 import OpenFeature
 
 extension FlagsmithProvider {
-    /// Flat attributes become traits; a nested `traits` structure overrides them on conflict.
+    /// Every context attribute becomes a trait.
     func traits(from context: EvaluationContext) -> Result<[Trait]?, ContextError> {
-        let attributes = context.asMap()
-        var merged = attributes.filter { $0.key != "traits" }
-        switch attributes["traits"] {
-        case .none:
-            break
-        case .structure(let nested):
-            merged.merge(nested) { _, nested in nested }
-        case .some:
-            return .failure(.traitsNotStructure)
-        }
         var traits: [Trait] = []
-        for (key, value) in merged {
+        for (key, value) in context.asMap() {
             switch value {
             case .string(let string): traits.append(Trait(key: key, value: string))
             case .boolean(let boolean): traits.append(Trait(key: key, value: boolean))
@@ -29,12 +19,10 @@ extension FlagsmithProvider {
 }
 
 enum ContextError: Error, CustomStringConvertible {
-    case traitsNotStructure
     case unsupportedTraitValue(key: String)
 
     var description: String {
         switch self {
-        case .traitsNotStructure: return "Attribute 'traits' must be a structure"
         case .unsupportedTraitValue(let key): return "Unsupported value for trait '\(key)'"
         }
     }

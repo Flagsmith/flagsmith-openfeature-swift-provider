@@ -132,33 +132,6 @@ struct FlagsmithProviderTests {
     }
 
     @Test
-    func test_initialize__nested_traits_conflicting_with_flat_attributes__nested_wins() async {
-        // Given
-        let source = FlagSourceMock(.success([Flag(featureName: "feature", enabled: true)]))
-        let provider = provider(source)
-        let context = ImmutableContext(
-            targetingKey: "user-123",
-            structure: ImmutableStructure(attributes: [
-                "foo": .string("bar"),
-                "abc": .string("def"),
-                "traits": .structure(["foo": .string("bar2")]),
-            ]))
-
-        // When
-        await provider.initialize(initialContext: context).value
-
-        // Then
-        #expect(source.fetches.first?.traits == ["foo": .string("bar2"), "abc": .string("def")])
-        #expect(
-            logs.entries.first
-                == LogCapture.Entry(
-                    level: .info,
-                    message: "Fetching flags from Flagsmith",
-                    metadata: ["identity": "user-123", "traits": "2"]
-                ))
-    }
-
-    @Test
     func test_initialize__unsupported_attribute_value__reports_invalid_context_error() async {
         // Given
         let source = FlagSourceMock(.success([]))
@@ -179,30 +152,6 @@ struct FlagsmithProviderTests {
             level: .error,
             message: "Invalid evaluation context",
             metadata: ["reason": "Unsupported value for trait 'tags'"]
-        )
-        #expect(logs.entries == [failure])
-    }
-
-    @Test
-    func test_initialize__non_structure_traits_attribute__reports_invalid_context_error() async {
-        // Given
-        let source = FlagSourceMock(.success([]))
-        let provider = provider(source)
-        let context = ImmutableContext(
-            targetingKey: "user-123",
-            structure: ImmutableStructure(attributes: [
-                "traits": .string("not-a-structure")
-            ]))
-
-        // When
-        await provider.initialize(initialContext: context).value
-
-        // Then
-        #expect(provider.status == .error)
-        let failure = LogCapture.Entry(
-            level: .error,
-            message: "Invalid evaluation context",
-            metadata: ["reason": "Attribute 'traits' must be a structure"]
         )
         #expect(logs.entries == [failure])
     }

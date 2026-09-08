@@ -122,8 +122,7 @@ The evaluation context maps to Flagsmith as follows:
 | OpenFeature context             | Flagsmith                                        |
 | ------------------------------- | ------------------------------------------------ |
 | `targetingKey`                  | Identity identifier                              |
-| Flat attributes                 | Traits                                           |
-| Nested `traits` structure       | Traits (overriding flat attributes on conflict)  |
+| Attributes                      | Traits                                           |
 | No `targetingKey`               | Environment flags are fetched; attributes are ignored |
 
 Attribute values must be strings, booleans, integers or doubles; any other value kind raises an
@@ -140,13 +139,12 @@ Each successful evaluation reports a reason:
 Each successful evaluation also carries string metadata identifying the Flagsmith feature: `feature_name`.
 
 ```swift
-// Traits sent to Flagsmith: {"abc": "def", "foo": "bar2"}
+// Traits sent to Flagsmith: {"plan": "premium", "age": 30}
 let context = ImmutableContext(
     targetingKey: "user-123",
     structure: ImmutableStructure(attributes: [
-        "foo": .string("bar"),
-        "abc": .string("def"),
-        "traits": .structure(["foo": .string("bar2")]),
+        "plan": .string("premium"),
+        "age": .integer(30),
     ])
 )
 ```
