@@ -7,8 +7,15 @@ TEST_FLAGS := -Xswiftc -F$(CLT_FRAMEWORKS) -Xlinker -F$(CLT_FRAMEWORKS) \
 export TOOLCHAIN_DIR := /Library/Developer/CommandLineTools
 endif
 
+.PHONY: install-packages
+install-packages: ## Fetch the package dependencies
+	swift package resolve
+
 .PHONY: install
-install: ## Install the lint and format tools
+install: install-packages ## Set up the local development environment
+
+.PHONY: install-lint-tools
+install-lint-tools: ## Install the lint and format tools
 	brew install swiftlint swift-format
 
 .PHONY: build

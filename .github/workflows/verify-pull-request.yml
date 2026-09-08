@@ -27,7 +27,7 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Install lint tools
-        run: make install
+        run: make install-lint-tools
 
       - name: Lint
         run: make lint
